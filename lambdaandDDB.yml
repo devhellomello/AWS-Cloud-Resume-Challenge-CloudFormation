@@ -1,0 +1,82 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Resources:
+  MyDynamoDBTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      TableName: CloudResumeChallengeDDBTable
+      AttributeDefinitions:
+        - AttributeName: ID
+          AttributeType: S
+        - AttributeName: Views
+          AttributeType: N
+      KeySchema:
+        - AttributeName: ID
+          KeyType: HASH
+        - AttributeName: Views
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  
+  MyCustomResourceLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Runtime: python3.11
+      Handler: index.lambda_handler
+      Role: !GetAtt MyLambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          tableName: !Ref MyDynamoDBTable
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+
+          dynamodb = boto3.resource('dynamodb')
+          table = dynamodb.Table('CloudResume')
+
+          def lambda_handler(event, context):
+              response = table.get_item(Key={'ID':'1'})
+              views = response['Item']['views']
+              views = views + 1
+              print(views)
+    
+              response = table.update_item(
+                Key={'ID':'1'},
+                UpdateExpression='SET #v = :val',
+                ExpressionAttributeNames={'#v': 'views'},
+                ExpressionAttributeValues={':val': views}
+              )
+
+              return views
+      Timeout: 30
+
+  MyLambdaExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+        - 'arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess'
+  MyCustomResource:
+    Type: 'Custom::MyCustomResource'
+    Properties:
+      ServiceToken: !GetAtt MyCustomResourceLambdaFunction.Arn
+  MyLambdaFunctionURL:
+    Type: AWS::Lambda::Url
+    Properties:
+      AuthType: NONE
+      TargetFunctionArn: !Ref MyCustomResourceLambdaFunction
+
+Outputs:
+  LambdaFunctionURL:
+    Description: URL for the Lambda function to be used in JS code
+    Value: !GetAtt MyCustomResourceLambdaFunction.FunctionUrl
