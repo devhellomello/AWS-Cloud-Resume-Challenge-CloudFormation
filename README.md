@@ -1,5 +1,5 @@
 # AWS-Cloud-Resume-Challenge-CloudFormation
-This repo the information necessary to complete the basics of the Cloud Resume Challenge in AWS using the AWS CLI and CloudFormation for automation rather than manually working through the console. 
+This repo has 2 yaml files that can be used to create basic versions of the resources necessary to complete the Cloud Resume Challenge in AWS using the AWS CLI and CloudFormation for automation rather than manually working through the console. You will need to add some attributes to the code in order for it to be specific to your project and include more advanced settings necessary for the challenge. 
 
 1. Buy your custom domain name through Route 53 (or whatever service you prefer).
 2. Request a public certificate to be stored in ACM that will be applied to your CloudFront distribution so that your website will utilize HTTPS.
