@@ -14,5 +14,6 @@ This repo the information necessary to complete the basics of the Cloud Resume C
    - Create a Lambda function with a policy that allows it to get item and update item in the DynamoDB table
    - Create a Lambda function URL so that we can call the function in our JavaScript file
 4. Upload your website files to the S3 bucket
+   - make sure you update your JavaScript file to include the Lambda function URL
 
 Instead of downloading the CLI to my computer I used CloudShell in the console which doesn't require authentication. 
