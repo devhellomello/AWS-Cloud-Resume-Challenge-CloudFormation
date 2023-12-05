@@ -17,3 +17,5 @@ This repo the information necessary to complete the basics of the Cloud Resume C
    - make sure you update your JavaScript file to include the Lambda function URL
 
 Instead of downloading the CLI to my computer I used CloudShell in the console which doesn't require authentication. 
+
+CloudShell CLI command: aws cloudformation deploy --template-file FILENAME.yml --stack-name CREATE_A_NAME_FOR_YOUR_STACK --capabilities CAPABILITY_NAMED_IAM
